@@ -38,6 +38,7 @@ func TestLogItMore(t *testing.T) {
 	ts := httptest.NewServer(logifymw.LogItMore(testHandler()))
 	defer ts.Close()
 
+	//_, err := http.Get(ts.URL + "?id=22")
 	_, err := http.Get(ts.URL)
 	if err != nil {
 		t.Error(err)

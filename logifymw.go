@@ -20,7 +20,7 @@ func LogIt(mux http.Handler) http.HandlerFunc {
 // as the elapsed time.
 func LogItMore(mux http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		msg := fmt.Sprintf("%-15s %-4s %-50s %s %s", r.RemoteAddr, r.Method, r.URL.EscapedPath(), r.URL.RawQuery, r.UserAgent())
+		msg := fmt.Sprintf("%-15s %-4s %-50s %s", r.RemoteAddr, r.Method, r.URL.EscapedPath()+" "+r.URL.RawQuery, r.UserAgent())
 		defer measureTime(msg, time.Now())
 		mux.ServeHTTP(w, r)
 	}
