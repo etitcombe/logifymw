@@ -75,7 +75,6 @@ func TestLogItMoreMore(t *testing.T) {
 
 func testHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, "blorf")
 	}
 }

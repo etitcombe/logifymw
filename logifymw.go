@@ -31,7 +31,7 @@ func LogItMore(mux http.Handler) http.HandlerFunc {
 func LogItMoreMore(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
-		lw := loggingResponseWriter{w, 0, 0}
+		lw := loggingResponseWriter{w, http.StatusOK, 0}
 		h.ServeHTTP(&lw, r)
 
 		msg := fmt.Sprintf("%-15s %-4s %-50s %s %d %d", r.RemoteAddr, r.Method, r.URL.EscapedPath()+" "+r.URL.RawQuery, r.UserAgent(), lw.status, lw.size)
