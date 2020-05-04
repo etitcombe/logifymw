@@ -25,8 +25,8 @@ func TestLogIt(t *testing.T) {
 	}
 
 	// We should get a string like this:
-	// "2020/05/04 13:34:12 GET                                                     3.2µs\n"
-	ok, err := regexp.MatchString(`^\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d GET .*s\n$`, buf.String())
+	// "2020/05/04 13:34:12 GET  /                                                  3.2µs\n"
+	ok, err := regexp.MatchString(`^\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d GET  \/.*s\n$`, buf.String())
 	if err != nil {
 		t.Fatalf("TestLogIt: error matching regular expression: %v", err)
 	}
@@ -49,8 +49,8 @@ func TestLogItMore(t *testing.T) {
 	}
 
 	// We should get a string like this:
-	// "2020/05/04 13:33:13 127.0.0.1:48994 GET                                                     Go-http-client/1.1 1.4µs\n"
-	ok, err := regexp.MatchString(`^\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d 127.0.0.1:\d+ GET \s+ Go-http-client\/1.1 .*s\n$`, buf.String())
+	// "2020/05/04 13:33:13 127.0.0.1:48994 GET  /                                                  Go-http-client/1.1 1.4µs\n"
+	ok, err := regexp.MatchString(`^\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d 127.0.0.1:\d+ GET  \/\s+ Go-http-client\/1.1 .*s\n$`, buf.String())
 	if err != nil {
 		t.Fatalf("TestLogItMore: error matching regular expression: %v", err)
 	}
@@ -72,8 +72,8 @@ func TestLogItMoreMore(t *testing.T) {
 	}
 
 	// We should get a string like this:
-	// "2020/05/04 13:33:13 127.0.0.1:44780 GET                                                     Go-http-client/1.1 200 5 6.5µs\n"
-	ok, err := regexp.MatchString(`^\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d 127.0.0.1:\d+ GET \s+ Go-http-client\/1.1 200 5 .*s\n$`, buf.String())
+	// "2020/05/04 13:33:13 127.0.0.1:44780 GET  /                                                  Go-http-client/1.1 200 5 6.5µs\n"
+	ok, err := regexp.MatchString(`^\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d 127.0.0.1:\d+ GET  \/\s+ Go-http-client\/1.1 200 5 .*s\n$`, buf.String())
 	if err != nil {
 		t.Fatalf("TestLogItMoreMore: error matching regular expression: %v", err)
 	}
