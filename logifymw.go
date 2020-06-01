@@ -20,7 +20,7 @@ func LogIt(mux http.Handler) http.Handler {
 // as the elapsed time.
 func LogItMore(mux http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		msg := fmt.Sprintf("%-15s %-4s %-50s %s", r.RemoteAddr, r.Method, r.URL.Path+" "+r.URL.RawQuery, r.UserAgent())
+		msg := fmt.Sprintf("%-15s %-4s %-50s %s", getIP(r), r.Method, r.URL.Path+" "+r.URL.RawQuery, r.UserAgent())
 		defer measureTime(msg, time.Now())
 		mux.ServeHTTP(w, r)
 	})
@@ -34,9 +34,17 @@ func LogItMoreMore(h http.Handler) http.Handler {
 		lw := loggingResponseWriter{w, http.StatusOK, 0}
 		h.ServeHTTP(&lw, r)
 
-		msg := fmt.Sprintf("%-15s %-4s %-50s %s %d %d", r.RemoteAddr, r.Method, r.URL.Path+" "+r.URL.RawQuery, r.UserAgent(), lw.status, lw.size)
+		msg := fmt.Sprintf("%-15s %-4s %-50s %s %d %d", getIP(r), r.Method, r.URL.Path+" "+r.URL.RawQuery, r.UserAgent(), lw.status, lw.size)
 		log.Printf("%s %s", msg, time.Since(now))
 	})
+}
+
+func getIP(r *http.Request) string {
+	ip := r.Header.Get("X-Forwarded-For")
+	if ip == "" {
+		ip = r.RemoteAddr
+	}
+	return ip
 }
 
 func measureTime(msg string, start time.Time) {
