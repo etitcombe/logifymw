@@ -9,31 +9,43 @@ import (
 )
 
 // LogIt logs the request method, path, and query as well as the elapsed time.
-func LogIt(mux http.Handler) http.Handler {
+func LogIt(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		msg := fmt.Sprintf("%-4s %-50s", r.Method, r.URL.Path+" "+unescape(r.URL.RawQuery))
 		defer measureTime(msg, time.Now())
-		mux.ServeHTTP(w, r)
+		next.ServeHTTP(w, r)
+	})
+}
+
+// LogIt2 logs to log the request method, path and query, the response status, size, and the elapsed time.
+func LogIt2(log *log.Logger, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		now := time.Now()
+		lw := loggingResponseWriter{w, http.StatusOK, 0}
+		next.ServeHTTP(&lw, r)
+
+		msg := fmt.Sprintf("%-4s %-50s %d %-5d", r.Method, unescape(r.URL.RequestURI()), lw.status, lw.size)
+		log.Printf("%s %s", msg, time.Since(now))
 	})
 }
 
 // LogItMore logs the request address, method, path, query, and user agent as well
 // as the elapsed time.
-func LogItMore(mux http.Handler) http.Handler {
+func LogItMore(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		msg := fmt.Sprintf("%-15s %-4s %-50s %s", getIP(r), r.Method, r.URL.Path+" "+unescape(r.URL.RawQuery), r.UserAgent())
 		defer measureTime(msg, time.Now())
-		mux.ServeHTTP(w, r)
+		next.ServeHTTP(w, r)
 	})
 }
 
 // LogItMoreMore adds the status and the size to the log message to what was
 // already added by LogItMore.
-func LogItMoreMore(h http.Handler) http.Handler {
+func LogItMoreMore(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
 		lw := loggingResponseWriter{w, http.StatusOK, 0}
-		h.ServeHTTP(&lw, r)
+		next.ServeHTTP(&lw, r)
 
 		msg := fmt.Sprintf("%-15s %-4s %-50s %s %d %d", getIP(r), r.Method, r.URL.Path+" "+unescape(r.URL.RawQuery), r.UserAgent(), lw.status, lw.size)
 		log.Printf("%s %s", msg, time.Since(now))
@@ -42,11 +54,11 @@ func LogItMoreMore(h http.Handler) http.Handler {
 
 // LogItMoreMore2 adds the protocol, and uses the request URI instead of the path
 // and query, to the log message to what was already added by LogItMoreMore.
-func LogItMoreMore2(h http.Handler) http.Handler {
+func LogItMoreMore2(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
 		lw := loggingResponseWriter{w, http.StatusOK, 0}
-		h.ServeHTTP(&lw, r)
+		next.ServeHTTP(&lw, r)
 
 		msg := fmt.Sprintf("%-15s %-8s %-4s %-50s %s %d %d", getIP(r), r.Proto, r.Method, unescape(r.URL.RequestURI()), r.UserAgent(), lw.status, lw.size)
 		log.Printf("%s %s", msg, time.Since(now))
