@@ -24,7 +24,7 @@ func LogIt2(log *log.Logger, next http.Handler) http.Handler {
 		lw := loggingResponseWriter{w, http.StatusOK, 0}
 		next.ServeHTTP(&lw, r)
 
-		msg := fmt.Sprintf("%-8s %-71s %d %-5d", r.Method, unescape(r.URL.RequestURI()), lw.status, lw.size)
+		msg := fmt.Sprintf("%-7s %-77s %d %-5d", r.Method, unescape(r.URL.RequestURI()), lw.status, lw.size)
 		log.Printf("%s %s", msg, time.Since(now))
 	})
 }
